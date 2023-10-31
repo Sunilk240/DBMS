@@ -1,0 +1,228 @@
+create database bank;
+
+use bank;
+
+create table Branch(
+    branch_name varchar(20) PRIMARY KEY,
+    branch_city varchar(20) NOT NULL,
+    assets varchar(20) NOT NULL
+);
+
+create table Account(
+    acc_no INT PRIMARY KEY,
+    branch_name varchar(20) NOT NULL,
+    balance INT NOT NULL CHECK (balance>=2000),
+    FOREIGN KEY (branch_name) REFERENCES Branch (branch_name) ON
+    DELETE CASCADE
+);
+
+create table customer(
+    cust_name varchar(20) PRIMARY KEY,
+    cust_street varchar(20) NOT NULL,
+    cust_city varchar(20) NOT NULL
+);
+
+create table depositpor(
+    cust_name varchar(20) NOT NULL,
+    acc_no INT NOT NULL,
+    FOREIGN KEY (cust_name) REFERENCES customer (cust_name) ON DELETE CASCADE,
+    FOREIGN KEY (acc_no) REFERENCES Account (acc_no) ON DELETE CASCADE
+);
+
+create table loan(
+    loan_no INT PRIMARY KEY,
+    branch_name varchar(20) NOT NULL,
+    amount INT NOT NULL,
+    FOREIGN KEY (branch_name) REFERENCES Branch (branch_name) ON DELETE CASCADE
+);
+
+
+create table borrower(
+    cust_name varchar(20) NOT NULL,
+    loan_no INT NOT NULL,
+    FOREIGN KEY (cust_name) REFERENCES customer (cust_name) ON DELETE CASCADE,
+    FOREIGN KEY (loan_no) REFERENCES loan (loan_no) ON DELETE CASCADE
+);
+
+insert into branch values("nigadi","pune",40000);
+insert into branch values("akurdi","pune",50000);
+insert into branch values("hadapsar","pune",55000);
+insert into branch values("katraj","pune",90000);
+insert into branch values("swarget","pune",100000);
+insert into branch values("basrsi road","solapur",100000);
+insert into branch values("xyz","mumbai",25000);
+
+insert into account values(101,"nigadi",20000);
+insert into account values(102,"akurdi",25000);
+insert into account values(103,"nigadi",2000);
+insert into account values(104,"hadapsar",55000);
+insert into account values(105,"swarget",80000);
+insert into account values(106,"katraj",5000);
+insert into account values(107,"swarget",9000);
+insert into account values(108,"akurdi",50000);
+
+insert into customer values("ritesh","sinhgad raod","pune");
+insert into customer values("aditya","varge bus stop","pune");
+insert into customer values("suyash","soplapur highway","pune");
+insert into customer values("onkar","latur road","barshi");
+insert into customer values("sushant","katraj road","pune");
+insert into customer values("jayesh","hadapsar","pune");
+insert into customer values("kaushal","katraj lake","pune");
+insert into customer values("adityas","parvati hill","pune");
+
+
+insert into depositpor values("ritesh",101);
+insert into depositpor values("suyash",102);
+insert into depositpor values("sushant",103);
+insert into depositpor values("aditya",104);
+insert into depositpor values("jayesh",105);
+insert into depositpor values("kaushal",106);
+insert into depositpor values("onkar",107);
+insert into depositpor values("onkar",108);
+
+ insert into loan values(2002,"akurdi",20000);
+insert into loan values(2004,"hadapsar",15000);
+insert into loan values(2005,"swarget",14000);
+insert into loan values(20087,"katraj",1500);
+insert into loan values(2008,"akurdi",30000);
+insert into loan values(2009,"akurdi",35000);
+insert into loan values(2010,"akurdi",1400);
+
+
+ insert into borrower values("ritesh",2002);
+ insert into borrower values("jayesh",2005);
+ insert into borrower values("aditya",2004);
+ insert into borrower values("suyash",20087);
+ insert into borrower values("onkar",2008);
+ insert into borrower values("kaushal",2009);
+ insert into borrower values("onkar",2010);
+
+1. Create a View1 to display List all customers in alphabetical order who have loan from 
+Pune_Station branch/akurdi branch.
+-> create view view1 as
+select b.cust_name, l.branch_name
+from borrower b, loan l
+WHERE b.loan_no=l.loan_no and l.branch_name="akurdi"
+group by b.cust_name;
+
+2. Create View2 on branch table by selecting any two columns and perform insert
+update delete operations.
+->create view view2 as
+select branch.branch_name,branch.branch_city,branch.assets
+from branch;
+
+//to see-> select * from view2;
+
+        1] insert:
+            insert into view2 values("vidyanagari","baramati",40000);
+            insert into view2 values("mumbai_uni","mumbai",45000);
+            
+        2] delete
+            delete from view2
+            WHERE branch_name like "v%";    //dele branch name start from "v"
+
+        3] update
+            update view2
+            set branch_name="juhu beach"       
+            WHERE branch_name like "%uni";   //update branch name end with "uni"
+
+3. Create View3 on borrower and depositor table by selecting any one column from each 
+table perform insert update delete operations.
+->
+    create view View3 as
+    select d.cust_name, b.loan_no
+    from depositpor d left join borrower b
+    on d.cust_name=b.cust_name;
+
+4. Create Union of left and right joint for all customers who have an account or loan or 
+both at bank
+->SELECT *
+FROM customers
+LEFT JOIN accounts ON customers.customer_id = accounts.customer_id
+RIGHT JOIN loans ON customers.customer_id = loans.customer_id
+WHERE accounts.customer_id IS NOT NULL OR loans.customer_id IS NOT NULL;
+
+SELECT cust_name
+FROM customer
+LEFT JOIN depositpor ON customer.cust_name=depositpor.cust_name
+UNION
+SELECT cust_name
+FROM customer
+RIGHT JOIN borrower ON customer.cust_name=borrower.cust_name;
+
+
+
+5)Display content of View1,View2,View3
+mysql> select * from view1;
+mysql> SELECT * FROM view2;
+mysql> SELECT * FROM view3;
+
+6)Create Simple and Unique index.
+mysql> create index idxonbranch on branch(bname);
+mysql> create unique index idxoncustomer on customer(cname);
+
+7)Display index Information 
+mysql> show indexes from branch;
+mysql> show indexes from customer;
+
+8)Truncate table Customer. 
+mysql> truncate table customer;
+
+
+..............................A3 part 2......................................
+
+create table companies(
+    comp_id varchar(20) PRIMARY KEY,
+    name varchar(20) NOT NULL,
+    cost INT NOT NULL, 
+    year INT NOT NULL);
+
+create table orders (
+    comp_id varchar(20) NOT NULL,
+    domain varchar(20) NOT NULL,
+    quantity INT NOT NULL,
+    FOREIGN KEY (comp_id) REFERENCES companies (comp_id)ON DELETE CASCADE);
+
+insert into companies values("C001", "ONGC", 2000, 2010);
+insert into companies values("C002", "HPCL", 2500, 2012);
+insert into companies values("C005", "IOCL", 1000, 2014);
+insert into companies values("C006", "BHEL", 3000, 2015 );
+
+insert into orders values("C001", "Oil", 109);
+insert into orders values("C002", "Gas", 121);
+insert into orders values("C005", "Telecom", 115);
+
+1. Find names, costs, domains and quantities for companies using inner join
+->select name,cost,domain,quantity from companies inner join orders on companies.comp_id=orders.comp_id;
+
+2. Find names, costs, domains and quantities for companies using left outer join.
+->select name,cost,domain,quantity from companies left join orders on companies.comp_id=orders.comp_id;
+
+3. Find names, costs, domains and quantities for companies using right outer join
+-> select name,cost,domain,quantity from companies right join orders on companies.comp_id=orders.comp_id;
+select name,cost,domain,quantity from companies Full join orders on companies.comp_id=orders.comp_id;
+
+4. Find names, costs, domains and quantities for companies using Union operator.
+->
+SELECT name, cost,NULL as domain, NULL as quantity
+FROM companies
+UNION
+SELECT NULL as name, NULL AS cost, domain, quantity
+FROM orders;
+
+SELECT name AS company_name, cost, NULL AS domain, NULL AS quantity
+FROM companies
+UNION
+SELECT companies.name AS company_name, NULL AS cost, domain, quantity
+FROM companies
+INNER JOIN orders ON companies.comp_id = orders.comp_id;
+
+
+5. Create View View1 by selecting both tables to show company name and quantities.
+-> create view view11 as
+select companies.name, orders.quantity
+from companies
+left join orders
+on
+companies.comp_id=orders.comp_id;
+ 

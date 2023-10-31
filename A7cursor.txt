@@ -1,0 +1,69 @@
+SET SERVEROUTPUT ON
+SET VERIFY OF
+
+create table o_rollcall(roll_no int, name varchar(20), class varchar(20));
+
+create table n_rollcall(roll_no int, name varchar(20), class varchar(20));
+
+insert into o_rollcall values(1,'onkar','te2');
+ insert into o_rollcall values(4,'robin','te3');
+  insert into o_rollcall values(3,'suhant','te2');
+
+DECLARE
+  r1 INT;
+  name VARCHAR2(20);
+  class VARCHAR2(20);
+  checker BOOLEAN := TRUE;
+  
+  crsr_roll_no INT;
+  crsr_name VARCHAR2(20);
+  crsr_class VARCHAR2(20);
+
+  CURSOR crsr_ot (roll INT) IS SELECT roll_no, name, class FROM o_rollcall;
+  CURSOR crsr_nt (roll INT) IS SELECT roll_no, name, class FROM n_rollcall;
+
+BEGIN
+  r1 := &r1;  
+  name := '&name';
+  class := '&class';
+
+  OPEN crsr_ot(r1);
+  
+  WHILE (checker) LOOP
+    FETCH crsr_ot INTO crsr_roll_no, crsr_name, crsr_class;
+    EXIT WHEN crsr_ot%NOTFOUND;
+    IF (crsr_roll_no = r1 AND crsr_name = name AND crsr_class = class) THEN
+      checker := FALSE;
+    END IF;
+  END LOOP;
+  
+  CLOSE crsr_ot;
+  
+  IF (checker) THEN
+    INSERT INTO o_rollcall VALUES (r1, name, class);
+    DBMS_OUTPUT.PUT_LINE('Data is inserted in old table');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Data already present in old table');
+  END IF;
+  
+  checker := TRUE;
+  
+  OPEN crsr_nt(r1);
+  
+  WHILE (checker) LOOP
+    FETCH crsr_nt INTO crsr_roll_no, crsr_name, crsr_class;
+    EXIT WHEN crsr_nt%NOTFOUND;
+    IF (crsr_roll_no = r1 AND crsr_name = name AND crsr_class = class) THEN
+      checker := FALSE;
+    END IF;
+  END LOOP;
+  
+  CLOSE crsr_nt;
+  
+  IF (checker) THEN
+    INSERT INTO n_rollcall VALUES (r1, name, class);
+    DBMS_OUTPUT.PUT_LINE('Data is inserted in new table');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Data already present in new table');
+  END IF;
+END;

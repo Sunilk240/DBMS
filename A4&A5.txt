@@ -1,0 +1,61 @@
+SET SERVEROUTPUT ON;
+SET VERIFY OF;
+
+create table borrower(roll_no int,nmae varchar(50),dateofiss date, nameofbook varchar(50), status varchar(50));
+
+create table fine(roll_no int, rdate date,amount int);
+
+insert into borrower values(101,'ritesh',to_date('2021-03-20','YYYY-MM-DD'),'dbms','I');
+insert into borrower values(102,'suyash',to_date('2023-03-25','YYYY-MM-DD'),'cns','I');
+insert into borrower values(103,'aditya',to_date('2022-10-10','YYYY-MM-DD'),'spos','I');
+insert into borrower values(104,'nikhil',to_date('2022-12-11','YYYY-MM-DD'),'toc','I');
+insert into borrower values(105,'rohan',to_date('2023-10-25','YYYY-MM-DD'),'iot','I');
+
+DECLARE
+    p_nameofbook varchar(50);
+    p_roll_no int;
+    p_dateofissue date;
+    currentdate date;
+    noofdays int;
+    amount int;
+    nodata EXCEPTION;
+
+BEGIN
+    p_roll_no:=&rollno;
+    p_nameofbook:='&nameofbook';
+    currentdate:=trunc(SYSDATE);
+IF p_roll_no<=0 THEN
+    RAISE nodata;
+END IF;
+    SELECT dateofiss INTO p_dateofissue FROM borrower WHERE roll_no=p_roll_no
+    AND nameofbook=p_nameofbook;
+    SELECT trunc(SYSDATE)-p_dateofissue INTO noofdays from dual;
+    dbms_output.put_line('no of days:'||noofdays);
+IF(noofdays>30) THEN amount:=noofdays*50;
+ELSIF(noofdays>=15 AND noofdays<=30) THEN amount:=noofdays*5;
+END IF;
+IF(amount>0) THEN insert INTO fine values(p_roll_no,SYSDATE,amount);
+END IF;
+UPDATE borrower set status='R' where roll_no=p_roll_no;
+EXCEPTION
+    WHEN nodata then
+    dbms_output.put_line('!!!!!roll not found!!!!');
+END;
+
+..................area of circle.................
+create table area1(radius int, area float);
+
+DECLARE
+ r int;
+ area float;
+ pi float;
+
+BEGIN
+pi:=3.14;
+for r in 5..9
+LOOP
+    area:=pi*r*r;
+    dbms_output.put_line('area:'||area);
+    INSERT INTO area1 values(r,area);
+END LOOP;
+END;

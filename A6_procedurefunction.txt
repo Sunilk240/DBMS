@@ -1,0 +1,55 @@
+SET SERVEROUTPUT ON
+SET VERIFY OF
+
+create table stud_marks(roll_no number(20) PRIMARY KEY, name varchar2(20),total_marks number(20));
+
+create table result(
+    roll_no number(20),
+    name varchar2(20), 
+    class varchar(20), 
+    FOREIGN KEY (roll_no) references stud_marks (roll_no) on 
+    DELETE CASCADE);
+
+insert into stud_marks values(1,'ritesh',1400);
+insert into stud_marks values(2,'suyash',900);
+insert into stud_marks values(3,'aditya',800);
+insert into stud_marks values(4,'onkar',850);
+
+CREATE OR REPLACE PROCEDURE proc_grade (
+  var_roll_no IN NUMBER,
+  p_roll_no OUT stud_marks.roll_no%TYPE,
+  p_name OUT stud_marks.name%TYPE,
+  p_total OUT stud_marks.total_marks%TYPE
+)
+AS
+BEGIN
+  SELECT roll_no, name, total_marks INTO p_roll_no, p_name, p_total FROM stud_marks WHERE roll_no = var_roll_no;
+  
+  IF p_total <= 1500 AND p_total >= 990 THEN
+    INSERT INTO result VALUES (p_roll_no, p_name, 'DISTINCTION');
+  ELSIF p_total <= 989 AND p_total >= 900 THEN
+    INSERT INTO result VALUES (p_roll_no, p_name, 'First Class');
+  ELSIF p_total <= 899 AND p_total >= 825 THEN
+    INSERT INTO result VALUES (p_roll_no, p_name, 'HSC');
+  ELSE
+    INSERT INTO result VALUES (p_roll_no, p_name, 'Fail');
+  END IF;
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    dbms_output.put_line('Roll no. ' || var_roll_no || ' is not found');
+END;
+/
+
+
+DECLARE
+var_roll_no number(20);
+p_roll_no stud_marks.roll_no%type;
+p_name stud_marks.name%type;
+p_total stud_marks.total_marks%type;
+
+BEGIN
+    var_roll_no:=&var_roll_no;
+    proc_grade(var_roll_no,p_roll_no,p_name,p_total);
+END;
+

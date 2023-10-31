@@ -1,0 +1,82 @@
+Mongodb
+B1-CRUD 
+Create and insert
+test> use Empdb
+switched to db Empdb
+
+Empdb> db.createCollection("emp")
+{ ok: 1 }
+Empdb> db.emp.insert({Empid:11,Name:{Fname:"Aarti",Lname:"Korhale"},cmp:"TCS",Salary:40000,Designation:"Developer",Age:19,Expertise:["Mongodb","Mysql","Cassandra"],DOB:16/02/2004,Emailid:"rt16@gmail.com",Contact:"9456784356",Address:{Paddr:["Pune"],Laddr:["Nagar"]}})
+Find()
+
+
+Empdb> db.emp.find()
+[
+  {
+    _id: ObjectId("653d17c904a3ec66de7bc885"),
+    Empid: 11,
+    Name: { Fname: 'Aarti', Lname: 'Korhale' },
+    cmp: 'TCS',
+    Salary: 40000,
+    Designation: 'Developer',
+    Age: 19,
+    Expertise: [ 'Mongodb', 'Mysql', 'Cassandra' ],
+    DOB: 0.003992015968063872,
+    Emailid: 'rt16@gmail.com',
+    Contact: '9456784356',
+    Address: { Paddr: [ 'Pune' ], Laddr: [ 'Nagar' ] }
+  },
+Empdb> db.emp.find({Designation:"Programmer",Salary:{$gt:30000}})
+[
+  {
+    _id: ObjectId("653d1e5204a3ec66de7bc88b"),
+    Empid: 21,
+    Name: { Fname: 'Gauri', Lname: 'Bhanage' },
+    cmp: 'TCS',
+    Salary: 35000,
+    Designation: 'Programmer',
+    Age: 35,
+    Expertise: [ 'AI', 'HTML', 'Sql' ],
+    DOB: 0.0020802130138126147,
+    Emailid: 'gauri12@gmail.com',
+    Contact: '8976545645',
+    Address: { Paddr: [ 'Sambhajinagar' ], Laddr: [ 'Koregoan Park' ] }
+  }
+]
+
+2nd & 3rd Query
+Empdb> db.emp.update({Destination:"Tester",cmp:"TCS"},{$set:{Age:25}},{upsert:true})
+DeprecationWarning: Collection.update() is deprecated. Use updateOne, updateMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedId: ObjectId("653d35c49df5798e67640eb5"),
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 1
+
+4th Query
+Empdb> db.emp.find({$or:[{Age:{$lt:30}},{Salary:{$gt:40000}}]})
+
+5th Query
+db.emp.find({"Address.Paddr":["Pune"]})
+db.emp.find({"Address.Paddr":"Pune",”Address.Pincode”:411001})
+
+6th Query
+Empdb> db.emp.find({cmp:"TCS"},{$inc:{Salary:2000}})
+MongoServerError: FieldPath field names may not start with '$'. Consider using $getField or $setField.
+
+7th Query
+Empdb> db.emp.find({Designation:{$ne:"Developer"}})
+
+8th Query
+Empdb> db.emp.find({Designation:{$ne:"Developer"}})
+
+9th Query
+Empdb> db.emp.find({cmp:"Infosys"},{_id:1,Designation:1,Address:1,Name:1})
+
+10th Query
+Empdb> db.emp.find({$or:[{Designation:"Developer"},{Designation:"Tester"}]})
+
+11th Query
+Empdb> db.emp.drop({Designation:"Developer"},1)
+True

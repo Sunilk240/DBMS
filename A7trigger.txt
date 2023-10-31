@@ -1,0 +1,73 @@
+SET SERVEROUTPUT ON 
+SET VERIFY OF
+
+create table library(rollno int, name char(20), dateofiss date, nameofbook char(20), status char(20));
+
+create table library_audit(rollno int, name char(20), dateofiss date, 
+nameofbook char(20), status char(20), ts timestamp);
+
+insert into library values(1,'ritesh',to_date('2023-03-04','YYYY-MM-DD'),'dbms','I');
+insert into library values(2,'suyash',to_date('2023-10-12','YYYY-MM-DD'),'cns','I');
+insert into library values(3,'aditya',to_date('2022-09-08','YYYY-MM-DD'),'spos','I');
+
+............after insert:- row level trigger................
+
+CREATE OR REPLACE TRIGGER af_insert
+AFTER INSERT
+ON library
+FOR EACH ROW
+BEGIN 
+    insert into library_audit values(:new.rollno,:new.name,:new.dateofiss,
+    :new.nameofbook,:new.status,current_timestamp);
+END;
+
+insert into library values(4,'nikhil',to_date('2023-10-18','YYYY-MM-DD'),'iot','I');
+
+
+...........after update:- row level trigger........................
+
+CREATE OR REPLACE TRIGGER af_update
+AFTER UPDATE
+ON library
+FOR EACH ROW
+BEGIN 
+    insert into library_audit values(:old.rollno,:old.name,:old.dateofiss,
+    :old.nameofbook,:old.status,current_timestamp);
+END;
+
+UPDATE library set nameofbook='spm' where library.rollno=4;
+
+
+
+...........after update:- row level trigger........................
+
+CREATE OR REPLACE TRIGGER af_delete
+AFTER DELETE
+ON library
+FOR EACH ROW
+BEGIN 
+    insert into library_audit values(:old.rollno,:old.name,:old.dateofiss,
+    :old.nameofbook,:old.status,current_timestamp);
+END;
+
+delete from library Where library.rollno=2;
+
+
+.................after insert, update and delete:- row level trigger........................
+
+CREATE OR REPLACE TRIGGER trig
+AFTER INSERT OR DELETE OR UPDATE
+ON library
+FOR EACH ROW
+BEGIN 
+IF UPDATING THEN 
+    insert into library_audit values(:old.rollno,:old.name,:old.dateofiss,
+    :old.nameofbook,:old.status,current_timestamp,'UPDATE');
+ELSIF INSERTING THEN
+    insert into library_audit values(:old.rollno,:old.name,:old.dateofiss,
+    :old.nameofbook,:old.status,current_timestamp,'INSERT');
+ELSIF DELETING THEN
+    insert into library_audit values(:old.rollno,:old.name,:old.dateofiss,
+    :old.nameofbook,:old.status,current_timestamp,'DELETE');
+END IF;    
+END;

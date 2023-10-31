@@ -1,0 +1,113 @@
+test> use Empdb;
+switched to db Empdb
+
+EmpdbEmpdb> db.createCollection("Employee");
+{ "ok" : 1 }
+
+EmpdbEmpdb> db.Employee.insert( {Empid:3001, Name:{FName:'Robin', LName:'Wadekar'}, Company_Name:'TCS', Salary:56489, Designation:'Programmer', Age:19, Expertise:['Mongodb','MySQL','C/C++','Java'], DOB:'30-11-2003', Email_id:'robwadekar3011@gmail.com', Contact:'7058883011', Address:[{Area:'Katraj',City:'Pune',Pin_code:411046},{Area:'Katraj',City:'Pune',Pin_code:411046}]} );
+WriteResult({ "nInserted" : 1 })
+
+EmpdbEmpdb> db.Employee.insert( {Empid:3002, Name:{FName:'Tejas', LName:'Dharmale'}, Company_Name:'Infosys', Salary:78456, Designation:'Developer', Age:20, Expertise:['Mongodb','MySQL','C/C++','Java','Python'], DOB:'09-11-2002', Email_id:'tejasDharmale@gmail.com', Contact:'9067722873', Address:[{Area:'Hadapsar',City:'Pune',Pin_code:411013},{Area:'Hadapsar',City:'Pune',Pin_code:411013}]} );
+WriteResult({ "nInserted" : 1 })
+
+EmpdbEmpdb> db.Employee.insert( {Empid:3003, Name:{FName:'Yash', LName:'Shivatare'}, Company_Name:'L&T', Salary:45975, Designation:'Tester', Age:20, Expertise:['C/C++','Python'], DOB:'21-09-2003', Email_id:'yashivatare@gmail.com', Contact:'9860390355', Address:[{Area:'Sinhgad',City:'Pune',Pin_code:411041},{Area:'Sinhgad',City:'Pune',Pin_code:411041}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3004, Name:{FName:'Suraj', LName:'Gawade'}, Company_Name:'TCS', Salary:78412, Designation:'Programmer', Age:19, Expertise:['Java','Mongodb','MySQL','HTML','C/C++','Python'], DOB:'26-11-2003', Email_id:'surag.gawade@gmail.com', Contact:'9767859000', Address:[{Area:'Kalyani Nagar',City:'Pune',Pin_code:411006},{Area:'Kalyani Nagar',City:'Pune',Pin_code:411006}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3005, Name:{FName:'Shrikar', LName:'Kolte'}, Company_Name:'Infosys', Salary:47895, Designation:'Developer', Age:20, Expertise:['C/C++','Python','MySQL'], DOB:'11-10-2003', Email_id:'shrikarKolte@gmail.com', Contact:'8530863619', Address:[{Area:'UK',City:'Pune',Pin_code:412201},{Area:'UK',City:'Pune',Pin_code:412201}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3006, Name:{FName:'Shreetej', LName:'Chavan'}, Company_Name:'L&T', Salary:65487, Designation:'Tester', Age:20, Expertise:['C/C++','Python'], DOB:'23-05-2003', Email_id:'shreeChavan@gmail.com', Contact:'8956117979', Address:[{Area:'Navle',City:'Pune',Pin_code:411041},{Area:'Navle',City:'Pune',Pin_code:411041}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3007, Name:{FName:'Atharva', LName:'Gawade'}, Company_Name:'TCS', Salary:45648, Designation:'Programmer', Age:20, Expertise:['C/C++','Python'], DOB:'25-12-2003', Email_id:'atharvaGawade@gmail.com', Contact:'7387320264', Address:[{Area:'Somewhere in the Pune',City:'Pune',Pin_code:411000},{Area:'Somewhere in the Pine',City:'Pune',Pin_code:411000}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3008, Name:{FName:'Sahil', LName:'Vengurlekar'}, Company_Name:'Infosys', Salary:47965, Designation:'Developer', Age:20, Expertise:['C/C++','Python','Java'], DOB:'29-06-2003', Email_id:'sahilVengi@gmail.com', Contact:'9284506113', Address:[{Area:'Somewhere in the Pune',City:'Pune',Pin_code:411001},{Area:'Somewhere in the Pine',City:'Pune',Pin_code:411001}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.insert( {Empid:3009, Name:{FName:'Mahesh', LName:'Bhabhad'}, Company_Name:'L&T', Salary:64887, Designation:'Tester', Age:20, Expertise:['C/C++','Python','Java'], DOB:'11-07-2003', Email_id:'maheshBhabhad@gmail.com', Contact:'9146938670', Address:[{Area:'Somewhere in the Pune',City:'Pune',Pin_code:411002},{Area:'Somewhere in the Pine',City:'Pune',Pin_code:411002}]} );
+WriteResult({ "nInserted" : 1 })
+
+Empdb> db.Employee.find();
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q1)
+Empdb> db.Employee.find({Designation:'Programmer',Salary:{$gt:30000}});
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q2)
+Empdb>db.Employee.update({Designation:'Tester',Company_Name:'TCS',Age:25},{$set:{Empid:3010,Name:{FName:'Someone',LName:'New'},Company_Name:'TCS',Salary:12445,Designation:'Tester',Age:25,Expertise:['C/C++','Pyhon'],DOB:'01-01-2003',Email:'someoneNew@gmail.com',Contact:7548961235,Address:[{Area:'Somewhere in the Pune',City:'Pune',Pin_code:411003},{Area:'Somewhere in the Pune',City:'Pune',Pin_code:411003}]}},{upsert:true});
+
+
+Empdb> db.Employee.find();
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q3)
+Empdb> db.Employee.find(
+... {
+... $or:[
+... {age:{$lt:30}},{Salary:{$gt:40000}}
+... ]
+... }
+... );
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q4)
+Empdb> db.Employee.find( { 'Address.City' : 'Pune', 'Address.Pin_code' : 411001 } );
+------------------------------------------------------------------------------------------------------------------------------------------
+Q5)
+Empdb> db.Employee.updateMany({Company_Name:'TCS'},{$inc:{Salary:-2000}});
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 4,
+  modifiedCount: 4,
+  upsertedCount: 0
+}
+
+Empdb> db.Employee.find({Company_Name : 'TCS'});
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q6)
+Empdb> db.Employee.find(
+... {Designation : {$ne:'Developer'}}
+... );
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q7)
+Empdb> db.Employee.find(
+... {Company_Name : 'Infosys'},{_id:1,Designation:1,Address:1, Name:1}
+... );
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q8)
+Empdb> db.Employee.find({
+... $or:[
+... {Designation : 'Tester'},{Designation : 'Developer'}
+... ]
+... });
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q9)
+Empdb> db.Employee.find({
+... Expertise:['Mongobd','MySQL','Cassandra']
+... });
+Empdb>
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Q10)
+Empdb> db.Employee.deleteOne({
+... Designation : 'Developer'
+... });
+
+{ acknowledged: true, deletedCount: 1 }
+
+Empdb> db.Employee.find({Designation : 'Developer'});

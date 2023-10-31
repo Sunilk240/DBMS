@@ -1,0 +1,164 @@
+create database bank;
+
+use bank;
+
+create table Branch(
+    branch_name varchar(20) PRIMARY KEY,
+    branch_city varchar(20) NOT NULL,
+    assets varchar(20) NOT NULL
+);
+
+create table Account(
+    acc_no INT PRIMARY KEY,
+    branch_name varchar(20) NOT NULL,
+    balance INT NOT NULL CHECK (balance>=2000),
+    FOREIGN KEY (branch_name) REFERENCES Branch (branch_name) ON
+    DELETE CASCADE
+);
+
+create table customer(
+    cust_name varchar(20) PRIMARY KEY,
+    cust_street varchar(20) NOT NULL,
+    cust_city varchar(20) NOT NULL
+);
+
+create table depositpor(
+    cust_name varchar(20) NOT NULL,
+    acc_no INT NOT NULL,
+    FOREIGN KEY (cust_name) REFERENCES customer (cust_name) ON DELETE CASCADE,
+    FOREIGN KEY (acc_no) REFERENCES Account (acc_no) ON DELETE CASCADE
+);
+
+create table loan(
+    loan_no INT PRIMARY KEY,
+    branch_name varchar(20) NOT NULL,
+    amount INT NOT NULL,
+    FOREIGN KEY (branch_name) REFERENCES Branch (branch_name) ON DELETE CASCADE
+);
+
+
+create table borrower(
+    cust_name varchar(20) NOT NULL,
+    loan_no INT NOT NULL,
+    FOREIGN KEY (cust_name) REFERENCES customer (cust_name) ON DELETE CASCADE,
+    FOREIGN KEY (loan_no) REFERENCES loan (loan_no) ON DELETE CASCADE
+);
+
+insert into branch values("nigadi","pune",40000);
+insert into branch values("akurdi","pune",50000);
+insert into branch values("hadapsar","pune",55000);
+insert into branch values("katraj","pune",90000);
+insert into branch values("swarget","pune",100000);
+insert into branch values("basrsi road","solapur",100000);
+insert into branch values("xyz","mumbai",25000);
+
+insert into account values(101,"nigadi",20000);
+insert into account values(102,"akurdi",25000);
+insert into account values(103,"nigadi",2000);
+insert into account values(104,"hadapsar",55000);
+insert into account values(105,"swarget",80000);
+insert into account values(106,"katraj",5000);
+insert into account values(107,"swarget",9000);
+insert into account values(108,"akurdi",50000);
+
+insert into customer values("ritesh","sinhgad raod","pune");
+insert into customer values("aditya","varge bus stop","pune");
+insert into customer values("suyash","soplapur highway","pune");
+insert into customer values("onkar","latur road","barshi");
+insert into customer values("sushant","katraj road","pune");
+insert into customer values("jayesh","hadapsar","pune");
+insert into customer values("kaushal","katraj lake","pune");
+insert into customer values("adityas","parvati hill","pune");
+
+
+insert into depositpor values("ritesh",101);
+insert into depositpor values("suyash",102);
+insert into depositpor values("sushant",103);
+insert into depositpor values("aditya",104);
+insert into depositpor values("jayesh",105);
+insert into depositpor values("kaushal",106);
+insert into depositpor values("onkar",107);
+insert into depositpor values("onkar",108);
+
+ insert into loan values(2002,"akurdi",20000);
+insert into loan values(2004,"hadapsar",15000);
+insert into loan values(2005,"swarget",14000);
+insert into loan values(20087,"katraj",1500);
+insert into loan values(2008,"akurdi",30000);
+insert into loan values(2009,"akurdi",35000);
+insert into loan values(2010,"akurdi",1400);
+
+
+ insert into borrower values("ritesh",2002);
+ insert into borrower values("jayesh",2005);
+ insert into borrower values("aditya",2004);
+ insert into borrower values("suyash",20087);
+ insert into borrower values("onkar",2008);
+ insert into borrower values("kaushal",2009);
+ insert into borrower values("onkar",2010);
+
+......queries.........
+
+1. Find the names of all branches in loan relation
+-> select distinct branch_name from loan;
+
+2. Find all loan numbers for loans made at Akurdi Branch with loan amount > 12000
+->  select loan_no from loan WHERE branch_name="akurdi" and amount>12000;
+
+3. Find all customers who have a loan from bank. Find their names,loan_no and loan amount
+-> select borrower.cust_name,loan.loan_no,loan.amount from loan inner join borrower on loan.loan_no=borrower.loan_no;
+-> select borrower.cust_name,loan.loan_no,loan.amount from loan,borrower WHERE loan.loan_no=borrower.loan_no;
+
+4. List all customers in alphabetical order who have loan from Akurdi branch
+->  select borrower.cust_name from loan inner join borrower on loan.loan_no=borrower.loan_no WHERE branch_name="akurdi" order by cust_name;
+-> select borrower.cust_name from borrower,loan  where loan.loan_no=borrower.loan_no and branch_name="akurdi" order by cust_name;
+
+5. Find all customers who have an account or loan or both at bank
+-> select cust_name from borrower union select cust_name from depositpor;
+-> select depositpor.cust_name from depositpor left join borrower on depositpor.cust_name=borrower.cust_name union 
+    select borrower.cust_name from depositpor right join borrower on borrower.cust_name=depositpor.cust_name;
+
+6. Find all customers who have both account and loan at bank
+-> select depositpor.cust_name from depositpor,borrower where depositpor.cust_name=borrower.cust_name;
+-> select depositpor.cust_name from depositpor inner join borrower on depositpor.cust_name=borrower.cust_name;
+
+7. Find all customers who have account but no loan at the bank.
+-> select cust_name from depositpor where cust_name not in (select cust_name from borrower);
+-> select depositpor.cust_name from depositpor left join borrower on depositpor.cust_name=borrower.cust_name where 
+    borrower.cust_name is NULL;
+
+8. Find the average account balance at each branch
+-> select avg(balance), branch_name from account WHERE branch_name="akurdi";
+
+8. Find the average account balance at each branch
+-> select branch_name,avg(balance) from account group by branch_name;
+
+9. Find no. of depositors at each branch
+-> select branch_name,count(*) from account group by branch_name;
+
+10. Find name of Customer and city where customer name starts with Letter P
+-> select cust_name,cust_city from customer WHERE cust_name like 'p%';
+-> select cust_name,cust_city from customer WHERE cust_name like 'j%';
+
+11. Display distinct cities of branch.
+-> select distinct branch_city from branch;
+
+12. Find the branches where average account balance > 12000
+-> select branch_name,avg(balance) from account group by branch_name having avg(balance)>12000;
+
+13. Find number of tuples in customer relation.
+-> select count(*) from customer;
+-> select count(cust_name) from customer;
+
+14. Calculate total loan amount given by bank.
+-> select sum(amount) from loan ;
+-> select branch_name,sum(amount) from loan group by branch_name;
+
+15. Delete all loans with loan amount between 1300 and 1500.
+-> delete from loan where amount>=1300 and amount<=1500;
+
+16. Delete all tuples at every branch located in Nigdi
+-> delete from branch WHERE branch_city="nigadi";
+-> delete from branch WHERE branch_city="mumbai";
+
+
